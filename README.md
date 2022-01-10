@@ -1,0 +1,2 @@
+# CDC_project_EGEN
+This repo contains codes used to create a data pipeline for the assessment at EGEN Solutions. 
