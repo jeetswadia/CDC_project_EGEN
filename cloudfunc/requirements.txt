@@ -1,0 +1,14 @@
+base64
+logging
+pandas
+json
+google-api-core
+google-auth
+google-cloud-core
+google-cloud-storage
+google-crc32c
+google-cloud-pubsub
+googleapis-common-protos
+grpc-google-iam-v1
+google-resumable-media
+googleapis-common-protos
