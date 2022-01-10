@@ -1,0 +1,9 @@
+FROM python:3.8
+
+WORKDIR /
+
+ADD ["CDC_Covid.py","requirement.txt","cdccovidjeet-2baa48aff635.json","./"]
+
+RUN pip install -r requirement.txt
+
+CMD [ "python","./CDC_Covid.py" ]
