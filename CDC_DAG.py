@@ -58,7 +58,7 @@ def get_ensemble_records():
 def upload_to_bigquery():
     client = bigquery.Client()
 
-    table_id = 'cdccovidjeet:cdc_1.bq_table_cdc'
+    table_id = 'cdccovidjeet.cdc_1.bq_table_cdc'
     destination_table = client.get_table(table_id)
 
     row_count_before_inserting = destination_table.num_rows
@@ -78,7 +78,7 @@ def upload_to_bigquery():
     )
 
     uri = f'gs://us-central1-cdccomposer-f7365936-bucket/data/covid_processed/combined_files.csv' #CHECK THE URL
-    load_job = client.load_table_from_url(
+    load_job = client.load_table_from_uri(
         uri, table_id, job_config=job_config
     )
     load_job.result()
