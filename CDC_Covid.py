@@ -1,19 +1,35 @@
-from time import sleep
+'''
+The code abstact:
+-- vm is configured to work on python:3.7
+-- refer dockerfile
+
+-- importing libs
+-- API_Data is the link to the dataset used for the project
+-- defining the class:
+    - setting project id and pub/sub topic. this pub/sub topic is bridge between code and gcp services.
+    - requests.sessions pinging the api and returning result of the connection
+    - defing a callback 
+    - publishing message to pub/sub topic
+-- running the code fetching 2500 datapoints every second. initially it will take ~5 hours to fetch all the data 
+    which is 42.5M after that it will take ~15 minuits as the data updates with ~2.5M datapoints every two weeks
+
+for query contact me on swadiajeet@gmail.com
+'''
+
 from concurrent import futures
 from google.cloud.pubsub_v1 import PublisherClient
 from google.cloud.pubsub_v1.publisher.futures import Future
 from requests import Session
 import os
-import pandas as pd
 
 API_Data = "https://data.cdc.gov/resource/n8mc-b4w4.csv"
 
 
-class CDC_Covid_Topic:
+class CDCjeet_Topic:
 
     def __init__(self):
-        self.project_id = 'cdccovidjeet'
-        self.topic_id = 'cdc_covid_topic'
+        self.project_id = 'cdcjeet'
+        self.topic_id = 'cdcjeet_topic'
         self.publisher_client = PublisherClient()
         self.topic_path = self.publisher_client.topic_path(self.project_id, self.topic_id)
         self.publish_futures = []
@@ -48,11 +64,13 @@ class CDC_Covid_Topic:
         print(f"Published messages with error handler to {self.topic_path}.")
 
 if __name__ == '__main__':
-    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'cdccovidjeet-34146c45c9ab.json'
+    #json file is the private key associated with IAM 
+    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'cdcjeet-521e045bbf00.json'
 
-    cdc_topic = CDC_Covid_Topic()
-    for i in range(250):
+    cdc_topic = CDCjeet_Topic()
+
+    #initial data being too big, operating it piece by piece
+    for i in range(2500):
         message = cdc_topic.ping_cdc_api()
-        print(message)
+        print(message) #optional 
         cdc_topic.publish_message_to_topic(message)
-        sleep(90)
