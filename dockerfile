@@ -1,8 +1,8 @@
-FROM python:3.8
+FROM python:3.7
 
 WORKDIR /
 
-ADD ["CDC_Covid.py","requirement.txt","cdccovidjeet-34146c45c9ab.json","./"]
+ADD ["CDC_Covid.py","requirement.txt","cdcjeet-521e045bbf00.json","./"]
 
 RUN pip install -r requirement.txt
 
