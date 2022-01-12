@@ -1,3 +1,28 @@
+'''
+The code abstact:
+-- DAG is to run the code pipeline at certain time interval
+-- In the following code it is set as hourly
+-- refer https://tinyurl.com/schedulersyntax for details
+
+-- importing libs
+-- DAG_NAME = code name (the dag is code if your dag-code is code.py)
+-- defining default args parameters. more on https://tinyurl.com/dagargs
+-- creating a DAG with variable named dag which will be used later in the code
+    - for ease of understanding and code the name is same 
+-- func get_encemble_records: 
+    - getting data from manually created bucket in Google Cloud Storage(jeet_cdc in this case) because it is dumped by pub/sub topic via cloud function
+    - creating a file name combined.csv in data lib in bucket created from cloud composer
+-- func upload_to_bigquery:
+    - writing the data into bigquery table using its table id
+    - the job_config has skip_leading_rows=1 to make sure the heading/column names are not registered as data points
+-- the last segment of code is configuring the steps using airflow operators
+-- the path is given at the end of the code
+
+for query contact me on swadiajeet@gmail.com
+'''
+
+
+
 import pandas as pd
 from datetime import timedelta, datetime
 from airflow import DAG
@@ -12,15 +37,15 @@ DAG_NAME = 'CDC_DAG'
 default_args = {
     "depends_on_past": False,
     "owner": "airflow",
-    "retries": 3,
-    "retry_delay": timedelta(minutes=7),
+    "retries": 2,
+    "retry_delay": timedelta(minutes=1),
     "start_date": datetime(2022,1,1,0,0,0)
 }
 
 dag = DAG(
     dag_id=DAG_NAME,
     default_args=default_args,
-    schedule_interval= '@weekly',
+    schedule_interval= '@hourly',
     catchup=False,
     description=DAG_NAME,
     max_active_runs=1
@@ -28,7 +53,7 @@ dag = DAG(
 
 def get_ensemble_records():
     storage_client = storage.Client()
-    bucket = storage_client.get_bucket('cdc_covid_bucket')
+    bucket = storage_client.get_bucket('jeet_cdc')
     blobs = bucket.list_blobs()
     combined_df = pd.DataFrame()
 
@@ -58,7 +83,7 @@ def get_ensemble_records():
 def upload_to_bigquery():
     client = bigquery.Client()
 
-    table_id = 'cdccovidjeet.cdc_1.bq_table_cdc'
+    table_id = 'cdcjeet.jeetcdc.jeetcdc_table'
     destination_table = client.get_table(table_id)
 
     row_count_before_inserting = destination_table.num_rows
@@ -77,7 +102,7 @@ def upload_to_bigquery():
         autodetect=True
     )
 
-    uri = f'gs://us-central1-cdccomposer-f7365936-bucket/data/covid_processed/combined_files.csv' #CHECK THE URL
+    uri = f'gs://us-central1-envcdcjeet-735c9b61-bucket/data/covid_processed/combined_files.csv' #CHECK THE URL
     load_job = client.load_table_from_uri(
         uri, table_id, job_config=job_config
     )
