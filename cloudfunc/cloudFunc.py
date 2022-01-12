@@ -1,3 +1,18 @@
+'''
+The code abstact:
+-- The main cloud function is created such as it will be triggered by pub/sub topic
+
+-- importing libs
+-- defining the class:
+    - The class has three components: 
+        ` get message from pub/sub 
+        ` transform the message into dataframe(pandas)
+        ` upload it to bigquery
+        
+for query contact me on swadiajeet@gmail.com
+'''
+
+
 import base64
 import logging
 from pandas import DataFrame
@@ -9,7 +24,7 @@ class LoadToStorage:
     def __init__(self, event, context):
         self.event = event
         self.context = context
-        self.bucket_name = "cdc_covid_bucket"
+        self.bucket_name ="jeet_cdc"
    
     def get_message_data(self) -> str:
 
@@ -60,5 +75,5 @@ def process(event, context):
     message = data_upload.get_message_data()
     upload_df = data_upload.transform_payload_to_dataframe(message)
 
-    data_upload.upload_to_bucket(upload_df, "CDC_Covid_Report")
+    data_upload.upload_to_bucket(upload_df, "CDC_Jeet_Covid_Report")
 
